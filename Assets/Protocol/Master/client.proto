@@ -1,0 +1,217 @@
+syntax = "proto3";
+package KomoriTime;
+option go_package = "msg/cli";
+option optimize_for = SPEED;
+
+// Command 分段
+// client 0-10000
+enum Command {
+	Nil                 = 0;
+	//GM 9000000 ~
+	CMD_GMChangeAssetRequest = 9000000;
+	CMD_GMChangeAssetResponse = 9000001;
+	CMD_GMUnlockMapRequest = 9000002;
+	CMD_GMUnlockMapResponse = 9000003;
+	CMD_GMAddCollectionLvRequest = 9000004;
+	CMD_GMAddCollectionLvResponse = 9000005;
+	CMD_GMShowcaseAddExpRequest = 9000006;
+	CMD_GMShowcaseAddExpResponse = 9000007;
+	CMD_GMVisitorAddExpRequest = 9000008;
+	CMD_GMVisitorAddExpResponse = 9000009;
+	CMD_GMUnlockHandbookRequest = 9000010;
+	CMD_GMUnlockHandbookResponse = 9000011;
+	CMD_GMUnlockMuseumAreaRequest = 9000012;
+	CMD_GMUnlockMuseumAreaResponse = 9000013;
+	CMD_GmFinishMissionRequest = 9000014;
+	CMD_GmFinishMissionResponse = 9000015;
+	CMD_GMUnlockResearchRequest = 9000016;
+	CMD_GMUnlockResearchResponse = 9000017;
+	CMD_GMUnlockAllHandbookRequest = 9000018;
+	CMD_GMUnlockAllHandbookResponse = 9000019;
+	CMD_GMSkipMissionByIdRequest = 9000020;
+	CMD_GMSkipMissionByIdResponse = 9000021;
+	// 登录 1 - 10
+	CMD_LoginRequest = 1;
+	CMD_LoginResponse = 2;
+	CMD_HeartBeatRequest = 3;//心跳
+	CMD_HeartBeatResponse = 4;
+	CMD_TestRequest = 5;
+	CMD_TestResponse = 6;
+//	CMD_OfflineRequest = 5; //client没有主动下线
+//	CMD_OfflineResponse = 6;
+	//道具 21 - 25
+	CMD_UseItemRequest = 21;
+	CMD_UseItemResponse = 22;
+	CMD_ItemChangePush = 23;
+//	CMD_ItemInfoPush = 24;
+	// 属性 26 - 30
+//	CMD_AddAttributeRequest = 26;
+//	CMD_AddAttributeResponse = 27;
+//	CMD_AttributeInfoPush = 28;
+	//场景 35-39
+	CMD_SceneChangeRequest = 35;
+	CMD_SceneChangeResponse = 36;
+	CMD_SceneUnlockPush = 37;
+	// 钓鱼 41 - 50
+	CMD_FishingInfoPush = 40;
+	CMD_FishingStartRequest = 45;
+	CMD_FishingStartResponse = 46;
+	CMD_FishingCatchRequest = 47;
+	CMD_FishingCatchResponse = 48;
+	CMD_FishingRefreshUseItemRequest = 49;
+	CMD_FishingRefreshUseItemResponse = 50;
+	CMD_FishingRefreshPush = 51;
+	// 捕虫 55 - 70
+	CMD_InsectInfoPush = 55;
+	CMD_InsectCatchRequest = 58;
+	CMD_InsectCatchResponse = 59;
+	CMD_InsectQTERequest = 60;
+	CMD_InsectQTEResponse = 61;
+	CMD_InsectRefreshPush = 62;
+	CMD_InsectChangeToolRequest = 63;
+	CMD_InsectChangeToolResponse = 64;
+	CMD_InsectStartRequest = 65;
+	CMD_InsectStartResponse = 66;
+	// 图鉴 71-80
+	CMD_HandbookInfoRequest = 71;
+	CMD_HandbookInfoResponse = 72;
+	CMD_HandbookReceiveRequest = 73;
+	CMD_HandbookReceiveResponse = 74;
+	CMD_HandbookCollectionRevRequest = 75;
+	CMD_HandbookCollectionRevResponse = 76;
+	CMD_HandbookChangePush = 77;
+	// 任务模块 81 - 90
+	CMD_MissionQueryRequest = 81;
+	CMD_MissionQueryResponse = 82;
+	CMD_MissionReceiveRequest = 83;
+	CMD_MissionReceiveResponse = 84;
+	CMD_MissionChangeOnePush = 85;
+	CMD_MissionRewardRequest = 86;
+	CMD_MissionRewardResponse = 87;
+	CMD_MissionChangeManyPush = 88;
+	// 博物馆 91 - 110
+	CMD_EnterMuseumInfoPush = 91;
+	CMD_PlaceShowcaseRequest = 93;
+	CMD_PlaceShowcaseResponse = 94;
+	CMD_MoveShowcaseRequest = 95;
+	CMD_MoveShowcaseResponse = 96;
+	CMD_PackShowcaseRequest = 97;
+	CMD_PackShowcaseResponse = 98;
+	CMD_PlaceExhibitsRequest = 99;
+	CMD_PlaceExhibitsResponse = 100;
+	CMD_MoveExhibitsRequest = 101;
+	CMD_MoveExhibitsResponse = 102;
+	CMD_UnlockMuseumAreaRequest = 103;
+	CMD_UnlockMuseumAreaResponse = 104;
+	CMD_MuseumOfflineRewardPush = 105;
+	CMD_LevelupShowcasePush = 106;
+	CMD_ReceiveShowcaseRewardRequest = 107;
+	CMD_ReceiveShowcaseRewardResponse = 108;
+	CMD_RemoveExhibitsRequest = 109;
+	CMD_RemoveExhibitsResponse = 110;
+	// 研究  111 - 120
+	CMD_ResearchRequest = 111;
+	CMD_ResearchResponse = 112;
+	CMD_GetAllResearchIdRequest = 113;
+	CMD_GetAllResearchIdResponse = 114;
+	// 游客系统 121 - 135
+	CMD_CreateVisitorPush = 121;
+	CMD_LevelupVisitorRequest = 122;
+	CMD_LevelupVisitorResponse = 123;
+	CMD_VisitorLeaveMuseumRequest = 124;
+	CMD_VisitorLeaveMuseumResponse = 125;
+	CMD_VisitShowcaseRequest = 126;
+	CMD_VisitShowcaseResponse = 127;
+	CMD_GiveUpPathRequest = 128;
+	CMD_GiveUpPathResponse = 129;
+	CMD_GetAllVisitorInfoPush = 130;
+	CMD_CreateVisitorGroupPush = 131;
+	// NPC 对话 136 - 137
+	CMD_NpcTalkRequest = 136;
+	CMD_NpcTalkResponse = 137;
+	//141-145 商城
+	CMD_PurchaseGoodsRequest = 141;
+	CMD_PurchaseGoodsResponse = 142;
+	//146-150 变更用户信息
+	CMD_ReplaceNickNameRequest = 146;
+	CMD_ReplaceNickNameResponse = 147;
+	CMD_ReplaceHeadUrlRequest = 148;
+	CMD_ReplaceHeadUrlResponse = 149;
+	//151 - 155 体力同步
+	CMD_StrengthSyncRequest = 151;
+	CMD_StrengthSyncResponse = 152;
+	//151-155 博物馆宝箱
+	CMD_RepairBoxRequest = 153;
+	CMD_RepairBoxResponse = 154;
+
+}
+
+// 错误码
+enum ErrCode {
+		//0 成功
+    SUCCESS             = 0;
+
+	  //1-50 服务器系统错误
+    ERROR               = 1;//系统错误
+		DATA_QUERY_ERROR = 2;//数据查询错误
+	  DATA_NOT_FOUND = 3;//找不到对应数据
+		CONFIG_NOT_FOUND = 4;//找不到对用配置
+		DATA_UPDATE_ERROR = 5;//数据修改错误
+	  PARAM_ERROR = 6;//参数错误
+		ADD_ITEM_ERROR = 7;//添加道具错误
+		USER_NOT_AUTHENTICATED = 8;//用户未验证
+		MSG_UNMARSHAL_ERR = 9;//消息解析错误
+		MSG_SEND_ERR = 10;//消息发送错误
+	//51 - 100 道具错误
+		ITEM_NOT_ENOUGH = 51;//道具不足
+		ITEM_ADD_FAILED = 52;//道具添加失败
+		//101 - 150 博物馆错误
+	  SHOWCASE_NOT_FOUND_IN_BAG = 101;//背包找不到对应展柜
+		SHOWCASE_NOT_FOUND_IN_SCENE = 102;//场景找不到对应展柜
+		SHOWCASE_DUPLICATE_IN_SCENE = 103;//场景出现重复展柜
+		EXHIBITS_CANNOT_PLACE = 104;//展品不可被放置
+	  EXHIBITS_NOT_FOUND_IN_SHOWCASE = 105;//未能在展柜指定位置找到展品
+		VISITOR_EXP_NOT_ENOUGH = 106;//游客经验不足
+		VISITOR_ACHIEVE_MAX_LEVEL = 107;//游客达到最大等级
+		VISITOR_NOT_FOUND = 108;//未能找到指定游客
+	  EXHIBITS_NOT_FOUND_IN_COLLECTION = 109;//未能在收集物品中找到指定展品
+	  MUSEUM_LEVEL_NOT_ENOUGH = 110;//博物馆等级不足
+		EXHIBITS_NOT_ENOUGH = 111;//展品数量不足
+		AREA_LOCKED = 112;//区域未解锁
+	  //151 - 155 研究错误
+		RESEARCH_DUPLICATE = 151;//研究重复
+		RESEARCH_LOCKED = 152;//研究未解锁
+		//160 - 164 鱼
+		FISH_NOT_FOUND = 160; //鱼不存在
+		FISH_AREA_NOT_FOUND = 161;//鱼塘区域不存在
+		FISH_REFRESH_ERROR = 162;//刷鱼失败
+	    FISH_ROD_NOT_EXIST = 163;//鱼竿不存在
+		//165 - 170 捕虫
+		INSECT_TOOL_ERROR=165;//捕虫网不存在
+		INSECT_NOT_FOUND = 166;//找不到虫
+		INSECT_AREA_NOT_FOUND = 167;//找不到捕虫区域
+		INSECT_SWARM_NOT_FOUND = 168;//找不到虫群
+		INSECT_REFRESH_ERROR = 169;//刷新虫失败
+		INSECT_SWARM_CD_ERROR = 170;//虫群还在CD中
+		//171 - 175 博物馆图鉴
+		HANDBOOK_LV_NOT_ENOUGH = 171;//没有图鉴奖励
+		HANDBOOK_ADD_EXP_ERROR = 172;//增加图鉴 经验错误
+		HANDBOOK_NOT_UNLOCK = 173;	 //图鉴未解锁
+		HANDBOOK_NOT_FOUND_ERR = 174; //图鉴找不到
+		HANDBOOK_REWARD_RECEIVED = 175; //奖励已领取
+		//176 - 185 任务
+		MISSION_TRIGGER_ERROR = 176;	//任务触发错误
+		MISSION_REWARD_RECEIVED = 177;	//任务奖励已领取
+		MISSION_REC_ERROR = 178;		//任务领取错误
+		MISSION_NOT_FINISHED = 179;		//任务未完成
+		MISSION_ID_NOT_FOUND = 180;		//任务ID找不到
+
+		//186 - 190 用户信息变更
+		USER_CHANGE_NAME_ILLEGAL_ERR = 186;//变更的名称不合法
+		USER_NAME_LENGTH_ERR = 187;//名称长度过长
+
+		//191 - 195 场景
+		SCENE_NOT_FOUND = 191;//场景不存在
+		SCENE_NOT_MATCH = 192;//场景不匹配
+		SCENE_NOT_UNLOCK = 193;//场景未解锁
+}

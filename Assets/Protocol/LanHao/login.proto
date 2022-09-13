@@ -1,0 +1,693 @@
+syntax = "proto3";
+package KomoriTime;
+option go_package = "msg/cli";
+option optimize_for = SPEED;
+
+
+enum AttributeType {
+    DefaultAttr = 0;
+    FatigueValue = 1;//疲劳值
+    Coin = 2;//金币
+    ResearchPoint = 3;//研究点
+    Diamond = 4;//砖石
+    MuseumExp = 5;//博物馆经验
+    MuseumLevel = 6;//博物馆等级
+    ExpFish = 11;//钓鱼经验值
+}
+
+//用于测试添加属性
+message AddAttributeRequest {
+    repeated AttributeInfo attrList = 1;
+}
+
+message AddAttributeResponse {
+
+}
+
+message AttributeInfo {
+    AttributeType attrId = 1;
+    int32 value = 2;
+}
+
+//属性变动推送
+message AttributeInfoPush {
+    repeated AttributeInfo attrList = 1;
+}
+
+// 同步体力信息 推送
+message StrengthSyncRequest {}
+message StrengthSyncResponse {
+    int32 sValue = 1;//当前体力
+    int32 time =2;//剩余时间second
+}
+
+//鱼信息
+message FishUnit {
+    uint64 fishId = 1;
+    int32 confId = 2;
+    int32 size = 3;
+    int32 missionId = 4;//任务ID
+}
+//鱼塘 区域
+message FishAreaUnit {
+    uint64  areaId = 1; //随机的唯一ID
+    int32   confId = 2;//鱼塘ID
+    repeated FishUnit fishList = 3; //区域内所有鱼
+}
+
+//message FishingInfoRequest {
+////    int32 mapId = 1;//场景ID ps:这里参数->  改变场景通用协议 SceneChangeRequest
+//}
+message FishingInfoPush {
+    repeated FishAreaUnit areaList = 1;
+}
+
+message FishingStartRequest {
+    uint64 areaId = 1;
+    uint64 fishId = 2;
+}
+message FishingStartResponse {
+    uint64 fishId = 1;
+}
+
+message FishingCatchRequest {
+    uint64 areaId = 1;
+    uint64 fishId = 2;
+}
+message FishingCatchResponse {
+    bool isFirst = 1;//是否第一次捕获该鱼
+    uint64 fishId = 2;
+}
+
+message FishingRefreshUseItemRequest {
+    uint64 areaId = 1;
+    ItemUseInfo item = 2;
+}
+message FishingRefreshUseItemResponse {}
+
+
+message ChangeFish {
+    uint64 pondId= 1;
+    FishUnit fish = 2;
+}
+enum FishPushType{
+    Day = 0;//0=隔天
+    Interval =1;//间隔
+    ItemUse = 2;//道具
+    Mission = 3;//接取任务刷新
+}
+message FishingRefreshPush {
+    FishPushType pushType = 1;
+    repeated ChangeFish fishList = 2;
+}
+
+message GMChangeAssetRequest {
+    bool isCost = 1;//true=扣除 false=add
+    repeated ItemUseInfo changeList = 2;
+}
+message GMChangeAssetResponse {}
+
+message GMUnlockMapRequest {
+    int32 mapId = 1;
+}
+
+message GMUnlockMapResponse {
+    int32 mapId = 1;
+}
+
+message GMShowcaseAddExpRequest {
+    int64 showcaseId = 1;
+    int32 exp = 2;
+}
+
+message GMShowcaseAddExpResponse {
+    int64 showcaseId = 1;
+    int32 exp = 2;
+    int32 level = 3;
+}
+
+message GMVisitorAddExpRequest {
+    int32 cfgId = 1;
+    int32 exp = 2;
+}
+
+message GMVisitorAddExpResponse {
+    int32 cfgId = 1;
+    int32 exp = 2;
+}
+
+message GMAddCollectionLvRequest {
+    int32 collectionId = 1;
+    int32 addLevel = 2;
+}
+message GMAddCollectionLvResponse {}
+
+message GMUnlockHandbookRequest {
+    int32 collectionItemId = 1;
+}
+message GMUnlockHandbookResponse {}
+
+message GMUnlockAllHandbookRequest {}
+message GMUnlockAllHandbookResponse {}
+
+message GMUnlockMuseumAreaRequest {
+    int32 areaId = 1;
+}
+
+message GMUnlockMuseumAreaResponse {
+    int32 areaId = 1;
+}
+
+message GmFinishMissionRequest {
+    int32 missionId = 1;
+}
+message GmFinishMissionResponse {}
+
+message GMUnlockResearchRequest {
+    int32 id = 1;
+}
+message GMUnlockResearchResponse {
+    int32 id = 1;
+}
+
+message GMSkipMissionByIdRequest {
+    int32 missionId = 1;
+}
+message GMSkipMissionByIdResponse {}
+
+message HandbookCollection {
+    int32 collectionId = 1;
+    int32 lv = 2;
+    int32 exp = 3;
+    int32 min = 4;
+    int32 max = 5;
+    map<int32,int32> rewards = 6;//<level,state=[1有奖励 2已领取]>
+}
+
+// 收集物列表
+message HandbookInfoRequest {}
+message HandbookInfoResponse {
+    int32 lv = 1;
+    int32 exp = 2;
+    map<int32,int32> rewards = 3;
+    repeated HandbookCollection collectionList= 4;
+}
+
+//领取奖励
+message HandbookReceiveRequest {
+    int32 confId = 1;//图鉴ID 0=整体图鉴
+    int32 lv = 2;
+}
+message HandbookReceiveResponse {}
+
+//HandbookChangePush 收集物 变动
+message HandbookChangePush {
+    int32 lv = 1;
+    int32 exp = 2;
+    map<int32,int32> rewards = 3;
+    repeated HandbookCollection changeList = 4;
+}
+
+
+//最小虫 单元
+message InsectUnit {
+  uint64 id = 1;
+  int32 confId = 2;
+  int32 size = 3;
+  uint64 swarm = 4;// !=0 表示是虫群点刷新
+  int64 overTime = 5;//结束时间
+  int32 missionId = 6;//任务生成
+}
+//虫群
+message InsectSwarm {
+  uint64 id = 1;
+  int32 confId = 2;
+  int32 refreshCount = 3;//剩余刷新次数
+  int64 cd = 4; //结束时间
+  int32 itemId = 5;
+}
+//区域
+message InsectArea {
+  int32 areaId = 1;
+  repeated InsectSwarm swarmList = 2;
+  repeated InsectUnit insectList = 3;
+}
+
+//捕虫场所信息
+message InsectInfoPush {
+  uint64 catchToolId = 1;//捕虫网道具唯一ID
+  repeated InsectArea area_list = 2;
+}
+//消耗体力
+message InsectStartRequest {
+  int32 areaId = 1;
+  uint64 insectId = 2;
+}
+message InsectStartResponse {}
+
+message InsectCatchRequest {
+  int32 areaId = 1;
+  uint64 insectId = 2;
+}
+message InsectCatchResponse {
+   bool isFirst = 1;//是否第一次捕获
+  bool success = 2;//是否
+}
+
+message InsectQTERequest{
+  int32 areaId = 1;
+  uint64 swarmId = 2;
+  uint64 itemUniqueId = 3;
+  int32 effectValue = 4;//1 2 3  3种效果值
+}
+message InsectQTEResponse{}
+
+message InsectChangeToolRequest {
+  uint64 catchToolId = 1;
+}
+message InsectChangeToolResponse {}
+
+message InsectRefreshPush{
+  repeated InsectArea area_list = 1;
+}
+
+enum ItemType {
+    NIL = 0;
+    Item = 1;
+    ATTR = 2;
+    CatchTool = 8;
+    CollectionItem = 15;
+    Showcase = 26;
+    RMB = 35;
+}
+
+//拓展类型 捕捉工具
+message CatchToolInfo {
+    uint64 uniqueId = 1;
+    int32 durability = 2;//耐久度 -1表示永久  0为销毁
+}
+//背包中的展柜
+message RoleShowcaseInfo {
+    uint64 uniqueId = 1;
+    int32 level = 2;
+    int32 exp = 3;
+}
+//背包中的图鉴
+message CollectionItemInfo {
+    int32 level = 1;
+}
+//使用道具
+message UseItemRequest {
+    ItemInfo item = 1;
+}
+message UseItemResponse {}
+
+message AttrExtraInfo {
+    int64 diffTime = 1;
+}
+
+message ItemInfo {
+    ItemType propType = 1;
+    int32 confId = 2;
+    int32 num = 3;
+    oneof extraInfo {
+        CatchToolInfo catchToolInfo = 4;
+        RoleShowcaseInfo roleShowcaseInfo = 5;
+        CollectionItemInfo collectionItemInfo = 6;
+        AttrExtraInfo attrExtraInfo = 7;
+    }
+}
+
+message ItemUseInfo{
+    ItemType propType = 1;
+    int32 confId = 2;
+    int32 num = 3;
+    uint64 uniqueId = 4;
+}
+
+//道具数量变动推送
+message ItemChangePush {
+    repeated ItemInfo itemList = 1;
+}
+
+
+// Login cmd = 10000
+message LoginRequest {
+    string account = 1;
+    string token = 2;
+}
+
+message LoginResponse {
+    UserInfo userInfo = 1;
+}
+
+//心跳
+message HeartBeatRequest {}
+message HeartBeatResponse {}
+
+message UserInfo {
+    uint64 roleId = 1;
+    string name = 2;
+    //登录推送 所有道具相关(属性|捕捉工具|展柜...)
+    repeated ItemInfo itemList = 3;
+    repeated int32 unlockedMapId = 4;
+    string headUrl = 5;
+}
+
+enum MissionState {
+    NotReceived = 0;//未领取
+    Received    = 1;//领取任务
+    Finish      = 2;//进度已完成
+    Reward      = 3;//已领取奖励
+}
+//任务信息
+message MissionUnit {
+    int32 mission_id = 1;
+    MissionState state = 2;
+    repeated MissionProgress progress = 3;
+    int64 receiveTime = 4;//领取时间
+}
+//进度信息
+message MissionProgress {
+    int32 triggerId = 1;//触发类型 taskDesc - id
+    int32 confId = 2;   //目标配置ID(只有数量的话 该项=0)
+    int32 num = 3;      //
+}
+
+message MissionQueryRequest {}
+message MissionQueryResponse {
+    repeated MissionUnit mission_list = 1;
+}
+
+message MissionReceiveRequest {
+    int32 mission_id = 1;
+}
+message MissionReceiveResponse {}
+
+message MissionRewardRequest{
+    int32 mission_id = 1;
+}
+message MissionRewardResponse{}
+
+message MissionChangeOnePush {
+    MissionUnit mission = 1;
+}
+
+message MissionChangeManyPush {
+    repeated MissionUnit mission_list = 1;
+}
+
+//进入博物馆
+message EnterMuseumInfoPush {
+  repeated int32 unlockAreaId = 1;
+  repeated ShowcaseInfo showcases = 2;
+  int32 researchPoints = 3;//研究点
+  int32 coin = 4;//金币
+  repeated BoxInfo boxInfos = 5;//宝箱信息
+}
+
+//展柜升级通知
+message LevelupShowcasePush {
+  uint64 showcaseId = 1;
+  int32 level = 2;
+  int32 exp = 3;
+}
+
+//放置展柜
+message PlaceShowcaseRequest {
+  uint64 showcaseItemId = 1;//道具的唯一id
+  Direction direction = 2;
+  Point2D point = 3;
+}
+
+message PlaceShowcaseResponse {
+  ShowcaseInfo info = 1;
+}
+
+//移动展柜
+message MoveShowcaseRequest {
+  uint64 showcaseId = 1;//场景里的唯一id
+  Direction direction = 2;
+  Point2D point = 3;
+}
+
+message MoveShowcaseResponse {
+  ShowcaseInfo info = 1;
+}
+
+//收起展柜 同时推送道具消耗
+message PackShowcaseRequest {
+  uint64 showcaseId = 1;//场景里的唯一id
+}
+
+message PackShowcaseResponse {
+  uint64 showcaseId = 1;//场景里的唯一id
+}
+
+//放置展品
+message PlaceExhibitsRequest {
+  uint64 showcaseId = 1;//场景中展柜的唯一id
+  int32 index = 2;//slot 0~n
+  Exhibits exhibits = 3;//收藏品
+}
+
+message PlaceExhibitsResponse {
+  uint64 showcaseId = 1;//场景中展柜的唯一id
+  int32 index = 2;//slot 0~n
+  Exhibits exhibits = 3;//收藏品
+}
+
+message RemoveExhibitsRequest {
+  uint64 showcaseId = 1;//场景中展柜的唯一id
+  int32 index = 2;//slot 0~n
+}
+
+message RemoveExhibitsResponse {
+  uint64 showcaseId = 1;//场景中展柜的唯一id
+  int32 index = 2;//slot 0~n
+}
+
+
+message ReceiveShowcaseRewardRequest {
+  uint64 showcaseId = 1;
+}
+
+message ReceiveShowcaseRewardResponse {
+  uint64 showcaseId = 1;
+}
+
+//移动展品
+message MoveExhibitsRequest {
+  uint64 showcaseId = 1;//场景中展柜的唯一id
+  int32 fromIndex = 2;//slot 0~n
+  int32 toIndex = 3;//slot 0~n
+}
+
+message MoveExhibitsResponse {
+  map<int32, Exhibits> changed = 1;//发生过改边的展品k:位置 v:展品信息
+}
+
+//解锁区域
+message UnlockMuseumAreaRequest {
+  int32 areaId = 1;
+}
+
+message UnlockMuseumAreaResponse {
+  int32 areaId = 1;
+}
+
+//修复宝箱
+message RepairBoxRequest {
+  int32 cfgId = 1;
+}
+
+message RepairBoxResponse {
+  ShowcaseInfo showcase = 1;
+  int32 cfgId = 2;
+}
+
+//展柜信息
+message ShowcaseInfo {
+  uint64 showcaseId = 1;
+  int32 cfgId = 2;
+  Direction direction = 3;
+  Point2D point = 4;
+  int32 exp = 5;
+  int32 level = 6;
+  int32 researchPoint = 7;
+  int32 coin = 8;
+  map<int32, Exhibits> exhibits = 9;
+}
+
+//宝箱信息
+message BoxInfo {
+  int32 cfgId = 1;
+  Point2D point = 2;
+  Direction direction = 3;
+}
+
+
+//展品信息
+message Exhibits {
+  int32 exhibitsId = 1;//收藏品id(图鉴中配置表的id)
+  int32 size = 2;//大小
+}
+
+
+message GetAllVisitorInfoPush {// 进入博物馆的时候只推送一次
+  repeated VisitorGroup groupInfo = 1;
+  repeated VisitorInfo visitors = 2;
+}
+
+message CreateVisitorGroupPush {// 游客被解锁
+  repeated VisitorGroup groups = 1;
+}
+
+message CreateVisitorPush  { //每次刷新游客都会推送  定时推送多次
+  repeated VisitorInfo visitors = 1;
+}
+
+message LevelupVisitorRequest {
+  int32 cfgId = 1;//配置id
+}
+
+message LevelupVisitorResponse {
+  VisitorGroup groupInfo = 1;
+}
+
+//离开博物馆
+message VisitorLeaveMuseumRequest {
+  int64 visitorId = 1;//唯一id
+}
+
+message VisitorLeaveMuseumResponse {
+  int64 visitorId = 1;//唯一id
+}
+
+message GiveUpPathRequest {
+  int64 visitorId = 1;//唯一id
+}
+message GiveUpPathResponse {
+  int64 visitorId = 1;
+}
+message VisitShowcaseRequest { //参观完
+  int64 visitorId = 1;//唯一id
+}
+
+message VisitShowcaseResponse{
+  ShowcaseInfo showcaseInfo = 1;
+  VisitorGroup group = 2;
+}
+
+message VisitorInfo {
+  int64 id = 1;//唯一id
+  int32 cfgId = 2;//配置表里的游客id
+  int32 level = 3;//等级 (客户端暂时用不到)
+  int32 researchPoints = 4;//研究点
+  int32 coin = 5;//游客的金币
+  repeated VisitorPathInfo pathInfo = 6;//游客的任务节点
+}
+
+message VisitorGroup {
+  int32 cfgId = 1;//游客组Id
+  int32 exp = 2;//游客经验
+  int32 level = 3;//游客的等级
+}
+
+message VisitorPathInfo {
+  int64 showcaseId = 1;//展柜id
+  int32 exhibitsId = 2;//展品id
+  int32 eventId = 3;//事件id
+  int64 functionBuildId = 4;//功能性建筑id
+  int32 step = 5;//0.展柜 1.功能性建筑
+}
+
+
+
+message NpcTalkRequest {
+    int32 npcId = 1;
+    int32 plotId = 2;
+}
+message NpcTalkResponse {}
+
+enum Direction {
+  front = 0;
+  back = 1;
+  left = 2;
+  right = 3;
+}
+
+message Point2D {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message GetAllResearchIdRequest {
+
+}
+message GetAllResearchIdResponse {
+  repeated ResearchInfo infoList = 1;
+}
+
+message ResearchInfo {
+  int32 id = 1;
+  bool researched = 2;
+}
+
+message ResearchRequest {
+  int32 id = 1;
+}
+
+message ResearchResponse {
+}
+
+message RodUnit {
+    uint64 id = 1;
+    uint32 conf_id = 2;
+    uint32 hp = 3;
+}
+
+message RodBagRequest {}
+message RodBagResponse {
+    repeated RodUnit rod_list = 1;
+}
+
+message RodChangePush {
+    repeated RodUnit rod_list = 1;
+}
+enum ScenePosition {
+    Default = 0;
+    Fishing = 1;
+    Insect  = 2;
+    Museum  = 3;
+}
+
+message SceneChangeRequest {
+    ScenePosition position = 1;
+    int32 mapId = 2;
+}
+
+message SceneChangeResponse {}
+
+message SceneUnlockPush {
+    repeated int32 mapId = 1;
+}
+
+
+message PurchaseGoodsRequest {
+  int32 configId = 1;
+}
+
+message PurchaseGoodsResponse {
+  int32 configId = 1;
+}
+
+message ReplaceNickNameRequest {
+    string newName = 1;
+}
+message ReplaceNickNameResponse {}
+
+message ReplaceHeadUrlRequest {
+    string headUrl = 2;
+}
+message ReplaceHeadUrlResponse {}

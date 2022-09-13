@@ -1,0 +1,18 @@
+syntax = "proto3";
+package KomoriTime;
+option go_package = "msg/cli";
+option optimize_for = SPEED;
+
+message TestRequest {
+
+}
+
+message TestResponse {
+  int32 id = 1;
+  TestMessage msg = 2;
+}
+
+message TestMessage {
+  int32 a = 1;
+  int32 b = 2;
+}
